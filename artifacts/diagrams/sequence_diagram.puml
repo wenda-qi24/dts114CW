@@ -1,0 +1,15 @@
+plantuml
+@startuml
+actor Dreamer
+participant "System" as System
+database Storage
+
+Dreamer -> System: Submit dream description
+System -> Storage: Create session and save dream
+System --> Dreamer: Display follow-up questions
+Dreamer -> System: Answer all questions
+System -> Storage: Save answers
+System -> Storage: Generate and save analysis report
+System --> Dreamer: Display full analysis report
+
+@enduml
