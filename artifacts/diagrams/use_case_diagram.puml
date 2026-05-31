@@ -1,0 +1,28 @@
+@startuml
+actor Dreamer
+actor "Freudian AI Analyst" as FreudianAIAnalyst
+actor Administrator
+
+rectangle "Freudian Dream Interpretation System" {
+  usecase "Submit dream session" as SubmitDream
+  usecase "Generate follow-up questions" as GenerateQuestions
+  usecase "Answer follow-up questions" as AnswerQuestions
+  usecase "Produce full report" as ProduceReport
+  usecase "Review past sessions" as ReviewSessions
+  usecase "Administer users and sessions" as AdministerSystem
+}
+
+Dreamer -- SubmitDream
+Dreamer -- AnswerQuestions
+Dreamer -- ReviewSessions
+
+FreudianAIAnalyst -- GenerateQuestions
+FreudianAIAnalyst -- ProduceReport
+
+Administrator -- AdministerSystem
+
+SubmitDream ..> GenerateQuestions : <<include>>
+GenerateQuestions ..> AnswerQuestions : <<include>>
+AnswerQuestions ..> ProduceReport : <<include>>
+
+@enduml
