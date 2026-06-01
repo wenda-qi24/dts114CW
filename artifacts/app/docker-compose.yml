@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  dream-interpreter:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: dream-interpreter
+    ports:
+      - "5005:5005"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=main.py
+      - APIFREE_API_KEY=${APIFREE_API_KEY}
+      - APIFREE_API_BASE=${APIFREE_API_BASE:-https://api.apifree.ai}
+      - LLM_MODEL=${LLM_MODEL:-openai/gpt-5.2}
+    volumes:
+      - ./flask:/app
+    restart: unless-stopped
