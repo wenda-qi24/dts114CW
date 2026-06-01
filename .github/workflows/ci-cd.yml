@@ -1,0 +1,58 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  # ── CI: Test ──
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: artifacts/app/flask
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install flask flask-cors requests pytest
+
+      - name: Run tests
+        run: pytest test_app.py -v
+
+  # ── CI: Build Docker image ──
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: artifacts/app
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t dream-interpreter:latest -f docker/Dockerfile .
+
+      - name: Verify container starts
+        run: |
+          docker run -d -p 5005:5005 \
+            -e APIFREE_API_KEY=fake-key \
+            -e LLM_MODEL=openai/gpt-5.2 \
+            --name test-container \
+            dream-interpreter:latest
+          sleep 3
+          curl -f http://localhost:5005/health || (docker logs test-container && exit 1)
+          docker stop test-container
