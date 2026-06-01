@@ -4,24 +4,28 @@ actor "Freudian AI Analyst" as FreudianAIAnalyst
 actor Administrator
 
 rectangle "Freudian Dream Interpretation System" {
-  usecase "Submit new dream" as SubmitNewDream
-  usecase "Generate follow-up questions" as GenerateFollowUpQuestions
-  usecase "Answer follow-up questions" as AnswerFollowUpQuestions
-  usecase "Produce full report" as ProduceFullReport
-  usecase "Review past sessions" as ReviewPastSessions
-  usecase "Administer users and sessions" as AdministerUsersAndSessions
+  usecase "Submit dream content" as SubmitDream
+  usecase "Generate follow-up questions" as GenerateQuestions
+  usecase "Answer follow-up questions" as AnswerQuestions
+  usecase "Produce Freudian analysis" as ProduceAnalysis
+  usecase "Review past sessions" as ReviewSessions
+  usecase "Manage session retention" as ManageRetention
 }
 
-Dreamer -- SubmitNewDream
-Dreamer -- AnswerFollowUpQuestions
-Dreamer -- ReviewPastSessions
+Dreamer -- SubmitDream
+Dreamer -- AnswerQuestions
+Dreamer -- ProduceAnalysis
+Dreamer -- ReviewSessions
 
-FreudianAIAnalyst -- GenerateFollowUpQuestions
-FreudianAIAnalyst -- ProduceFullReport
+FreudianAIAnalyst -- GenerateQuestions
+FreudianAIAnalyst -- ProduceAnalysis
 
-Administrator -- AdministerUsersAndSessions
+Administrator -- ManageRetention
 
-SubmitNewDream ..> GenerateFollowUpQuestions : <<include>>
-GenerateFollowUpQuestions ..> AnswerFollowUpQuestions : <<include>>
-AnswerFollowUpQuestions ..> ProduceFullReport : <<include>>
+SubmitDream ..> GenerateQuestions : <<include>>
+GenerateQuestions ..> AnswerQuestions : <<include>>
+AnswerQuestions ..> ProduceAnalysis : <<include>>
+
+ReviewSessions ..> ManageRetention : <<extend>>
+ManageRetention ..> ReviewSessions : <<extend>>
 @enduml

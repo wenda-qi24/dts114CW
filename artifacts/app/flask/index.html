@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Freudian Dream Analyzer</title>
+  <meta name="description" content="A dreamy, elegant Freudian Dream Analyzer. Describe your dream and receive an AI-powered interpretation." />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <style>
+    :root{
+      --bg-0: #070612;
+      --bg-1: #0f0b22;
+      --card: rgba(20, 12, 40, 0.72);
+      --border: rgba(196, 159, 255, 0.22);
+      --text: #efeaff;
+      --muted: rgba(239, 234, 255, 0.72);
+      --accent: #b58cff;
+      --accent-2: #7d4cff;
+      --shadow: 0 18px 55px rgba(0,0,0,0.55);
+      --glow: 0 0 0 0.2rem rgba(181, 140, 255, 0.22);
+    }
+
+    html, body{
+      height: 100%;
+      background:
+        radial-gradient(1200px 700px at 15% 10%, rgba(181, 140, 255, 0.18), transparent 60%),
+        radial-gradient(900px 600px at 80% 15%, rgba(125, 76, 255, 0.16), transparent 55%),
+        radial-gradient(1100px 800px at 50% 95%, rgba(181, 140, 255, 0.10), transparent 55%),
+        linear-gradient(180deg, var(--bg-0), var(--bg-1));
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .page-wrap{
+      min-height: 100%;
+      padding: 2.25rem 0 3rem;
+      position: relative;
+    }
+
+    .dream-sheen{
+      position: absolute;
+      inset: -40px -40px auto -40px;
+      height: 320px;
+      background: linear-gradient(90deg, transparent, rgba(181,140,255,0.18), transparent);
+      transform: rotate(-8deg);
+      filter: blur(6px);
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .brand-title{
+      letter-spacing: 0.4px;
+      text-shadow: 0 10px 40px rgba(0,0,0,0.55);
+    }
+
+    .subtitle{
+      color: var(--muted);
+      max-width: 56rem;
+    }
+
+    .card-elegant{
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 1rem;
+    }
+
+    .illustration{
+      width: min(520px, 100%);
+      height: auto;
+      display: block;
+      margin-inline: auto;
+      border-radius: 18px;
+      border: 1px solid rgba(196, 159, 255, 0.18);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.5);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .form-label{
+      color: rgba(239, 234, 255, 0.9);
+    }
+
+    .form-control{
+      background: rgba(10, 8, 22, 0.75);
+      border: 1px solid rgba(196, 159, 255, 0.25);
+      color: var(--text);
+      border-radius: 0.9rem;
+    }
+    .form-control::placeholder{
+      color: rgba(239, 234, 255, 0.55);
+    }
+    .form-control:focus{
+      background: rgba(10, 8, 22, 0.82);
+      color: var(--text);
+      border-color: rgba(181, 140, 255, 0.65);
+      box-shadow: var(--glow);
+    }
+
+    textarea.form-control{
+      min-height: 220px;
+      resize: vertical;
+    }
+
+    .btn-accent{
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border: 0;
+      color: #100922;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 0.85rem 1.25rem;
+      box-shadow: 0 14px 30px rgba(125, 76, 255, 0.25);
+    }
+    .btn-accent:hover{
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+    }
+    .btn-accent:active{
+      transform: translateY(0px);
+    }
+    .btn-accent:focus{
+      box-shadow: 0 0 0 0.25rem rgba(181, 140, 255, 0.28);
+    }
+    .btn-accent[disabled]{
+      opacity: 0.75;
+      transform: none;
+    }
+
+    .helper-row{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .microcopy{
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .loading-wrap{
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      color: rgba(239, 234, 255, 0.85);
+    }
+
+    .spinner-border{
+      width: 1.2rem;
+      height: 1.2rem;
+      border-width: 0.18rem;
+      color: var(--accent);
+    }
+
+    .result-card{
+      border-radius: 1rem;
+      border: 1px solid rgba(196, 159, 255, 0.20);
+      background: rgba(8, 6, 18, 0.55);
+      box-shadow: 0 18px 55px rgba(0,0,0,0.45);
+      overflow: hidden;
+    }
+    .result-head{
+      padding: 1rem 1.25rem;
+      background: linear-gradient(180deg, rgba(181, 140, 255, 0.14), rgba(0,0,0,0));
+      border-bottom: 1px solid rgba(196, 159, 255, 0.14);
+    }
+    .result-body{
+      padding: 1.25rem;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      color: rgba(239, 234, 255, 0.92);
+    }
+
+    .fade-in{
+      animation: fadeInUp 420ms ease-out both;
+    }
+    @keyframes fadeInUp{
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert{
+      border-radius: 0.9rem;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .alert-danger{
+      background: rgba(120, 20, 45, 0.22);
+      color: rgba(255, 230, 240, 0.95);
+      border-color: rgba(255, 140, 170, 0.22);
+    }
+
+    footer{
+      color: rgba(239, 234, 255, 0.55);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 575.98px){
+      .page-wrap{ padding-top: 1.5rem; }
+      textarea.form-control{ min-height: 200px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .fade-in{ animation: none; }
+      .btn-accent:hover{ transform: none; }
+      .dream-sheen{ display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrap">
+    <div class="dream-sheen" aria-hidden="true"></div>
+
+    <main class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-9 col-xl-8">
+
+          <header class="text-center mb-4">
+            <img class="illustration mb-4" src="/illustration" alt="Dreamy illustration for the Freudian Dream Analyzer" />
+            <h1 class="display-6 fw-semibold brand-title mb-2">Freudian Dream Analyzer</h1>
+            <p class="subtitle mx-auto mb-0">
+              Describe your dream and receive an interpretation shaped by classic Freudian themes: symbolism, desire, conflict, and the hidden language of the unconscious.
+            </p>
+          </header>
+
+          <section class="card-elegant p-3 p-md-4 mb-4">
+            <form id="dreamForm" novalidate>
+              <div class="mb-3">
+                <label for="dreamInput" class="form-label fw-semibold">Your Dream</label>
+                <textarea
+                  id="dreamInput"
+                  class="form-control"
+                  placeholder="Describe your dream in detail..."
+                  required
+                  aria-describedby="dreamHelp"
+                ></textarea>
+                <div id="dreamHelp" class="microcopy mt-2">
+                  Include emotions, people, places, and any recurring symbols. The more detail, the richer the analysis.
+                </div>
+              </div>
+
+              <div id="alertContainer" class="mb-3" aria-live="polite" aria-atomic="true"></div>
+
+              <div class="helper-row">
+                <button id="submitBtn" type="submit" class="btn btn-accent">
+                  Analyze My Dream
+                </button>
+
+                <div id="loadingWrap" class="loading-wrap" role="status" aria-live="polite">
+                  <span class="spinner-border" aria-hidden="true"></span>
+                  <span>Delving into your subconscious...</span>
+                </div>
+              </div>
+            </form>
+          </section>
+
+          <section id="resultSection" class="result-card d-none" aria-live="polite" aria-atomic="true">
+            <div class="result-head">
+              <h2 class="h5 mb-0">Analysis</h2>
+            </div>
+            <div id="resultText" class="result-body"></div>
+          </section>
+
+          <footer class="text-center mt-4">
+            This tool offers reflective interpretation, not medical advice. If a dream causes distress, consider speaking with a qualified professional.
+          </footer>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById('dreamForm');
+      const dreamInput = document.getElementById('dreamInput');
+      const submitBtn = document.getElementById('submitBtn');
+      const loadingWrap = document.getElementById('loadingWrap');
+      const resultSection = document.getElementById('resultSection');
+      const resultText = document.getElementById('resultText');
+      const alertContainer = document.getElementById('alertContainer');
+
+      function setLoading(isLoading) {
+        loadingWrap.style.display = isLoading ? 'inline-flex' : 'none';
+        submitBtn.disabled = isLoading;
+        dreamInput.disabled = isLoading;
+      }
+
+      function clearAlert() {
+        alertContainer.innerHTML = '';
+      }
+
+      function showAlert(message) {
+        alertContainer.innerHTML =
+          '<div class="alert alert-danger mb-0" role="alert">' +
+            '<strong>Something went wrong.</strong> ' + escapeHtml(message) +
+          '</div>';
+      }
+
+      function showResult(text) {
+        resultText.textContent = text || '';
+        resultSection.classList.remove('d-none');
+        resultSection.classList.remove('fade-in');
+        void resultSection.offsetWidth; // reflow to restart animation
+        resultSection.classList.add('fade-in');
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, function (m) {
+          return ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+          })[m];
+        });
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        clearAlert();
+
+        const dream = (dreamInput.value || '').trim();
+        if (!dream) {
+          showAlert('Please describe your dream before submitting.');
+          dreamInput.focus();
+          return;
+        }
+
+        setLoading(true);
+
+        try {
+          const resp = await fetch('/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dream: dream })
+          });
+
+          let data = null;
+          try {
+            data = await resp.json();
+          } catch (err) {
+            data = null;
+          }
+
+          if (!resp.ok) {
+            const serverMsg = data && (data.error || data.message)
+              ? String(data.error || data.message)
+              : 'The server could not process your request. Please try again in a moment.';
+            showAlert(serverMsg);
+            return;
+          }
+
+          if (data && data.error) {
+            showAlert(String(data.error));
+            return;
+          }
+
+          const analysis = data && typeof data.analysis === 'string' ? data.analysis : '';
+          if (!analysis) {
+            showAlert('We did not receive an analysis this time. Please try again with a bit more detail.');
+            return;
+          }
+
+          showResult(analysis);
+        } catch (err) {
+          showAlert('We could not reach the analyzer. Please check your connection and try again.');
+        } finally {
+          setLoading(false);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

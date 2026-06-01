@@ -1,15 +1,16 @@
-plantuml
 @startuml
 actor Dreamer
 participant "System" as System
 database Storage
 
-Dreamer -> System: Submit dream description
+Dreamer -> System: Submit dream with consent and privacy settings
 System -> Storage: Create session and save dream
-System --> Dreamer: Display follow-up questions
-Dreamer -> System: Answer all questions
-System -> Storage: Save answers
-System -> Storage: Generate and save analysis report
+System --> Dreamer: Display 5-7 follow-up questions
+Dreamer -> System: Submit and edit answers
+System -> Storage: Save answers to session
+System -> Storage: Generate and save Freudian analysis report
 System --> Dreamer: Display full analysis report
-
+Dreamer -> System: Request past sessions list
+System -> Storage: Retrieve sessions metadata
+System --> Dreamer: Display sessions list and filters
 @enduml

@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Freudian Dream Interpreter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    :root{
+      --bg:#140a25;
+      --bg2:#1d0e34;
+      --card:rgba(255,255,255,.06);
+      --card2:rgba(255,255,255,.10);
+      --text:#f2eefc;
+      --muted:rgba(242,238,252,.75);
+      --accent:#b79cff;
+      --danger:#ff6b7a;
+      --border:rgba(255,255,255,.14);
+      --shadow: 0 18px 55px rgba(0,0,0,.45);
+    }
+
+    html, body { height: 100%; }
+    body{
+      background:
+        radial-gradient(1200px 500px at 15% 10%, rgba(183,156,255,.18), transparent 60%),
+        radial-gradient(900px 400px at 80% 20%, rgba(255,255,255,.08), transparent 55%),
+        radial-gradient(900px 450px at 40% 90%, rgba(183,156,255,.12), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      color: var(--text);
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+    }
+
+    .app-shell{
+      max-width: 980px;
+    }
+
+    .hero-card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .hero-media{
+      position: relative;
+      aspect-ratio: 21 / 9;
+      background:
+        radial-gradient(800px 300px at 30% 30%, rgba(183,156,255,.35), transparent 60%),
+        radial-gradient(700px 300px at 70% 40%, rgba(255,255,255,.10), transparent 60%),
+        linear-gradient(135deg, rgba(255,255,255,.06), rgba(183,156,255,.08));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-media img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      filter: saturate(1.05) contrast(1.02);
+    }
+
+    .hero-media .overlay{
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(20,10,37,.15), rgba(20,10,37,.62));
+    }
+
+    .hero-body{
+      padding: 1.25rem 1.25rem 1.1rem 1.25rem;
+    }
+
+    h1{
+      font-weight: 700;
+      letter-spacing: .2px;
+      margin-bottom: .35rem;
+    }
+
+    .tagline{
+      color: var(--muted);
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+    }
+
+    .form-control, .form-control:focus{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.18);
+      color: var(--text);
+      box-shadow: none;
+    }
+    .form-control::placeholder{ color: rgba(242,238,252,.55); }
+
+    .btn-accent{
+      background: linear-gradient(180deg, rgba(183,156,255,.95), rgba(146,118,255,.95));
+      border: 1px solid rgba(255,255,255,.20);
+      color: #140a25;
+      font-weight: 700;
+    }
+    .btn-accent:hover{
+      filter: brightness(1.02);
+      color: #120822;
+    }
+    .btn-accent:disabled{
+      opacity: .75;
+    }
+
+    .mini-note{
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    #inlineError{
+      color: var(--danger);
+      font-size: .95rem;
+      margin-top: .45rem;
+      display: none;
+    }
+
+    .result-card{
+      margin-top: 1rem;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .result-body{
+      padding: 1.1rem 1.25rem 1.25rem;
+    }
+
+    #result h3{
+      font-size: 1.08rem;
+      margin-top: 1rem;
+      margin-bottom: .35rem;
+      color: rgba(242,238,252,.95);
+      letter-spacing: .15px;
+    }
+    #result p, #result li{
+      color: rgba(242,238,252,.83);
+      line-height: 1.55;
+    }
+    #result ul{
+      margin-bottom: 0;
+      padding-left: 1.2rem;
+    }
+
+    .spinner-wrap{
+      display: none;
+      align-items: center;
+      gap: .6rem;
+      color: var(--muted);
+    }
+
+    .divider{
+      height: 1px;
+      background: rgba(255,255,255,.10);
+      margin: 1rem 0;
+    }
+
+    .foot{
+      color: rgba(242,238,252,.55);
+      font-size: .9rem;
+    }
+
+    a, a:visited { color: rgba(183,156,255,.95); }
+  </style>
+</head>
+<body>
+  <main class="container py-4 py-md-5 app-shell">
+    <section class="hero-card">
+      <div class="hero-media" aria-label="Dream illustration">
+        <img id="illustrationImg" alt="Generated dream illustration" />
+        <div class="overlay"></div>
+      </div>
+      <div class="hero-body">
+        <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3">
+          <div>
+            <h1 class="mb-1">Freudian Dream Interpreter</h1>
+            <div class="tagline">Explore the hidden meanings of your dreams</div>
+          </div>
+          <div class="spinner-wrap" id="loadingWrap" aria-live="polite" aria-busy="false">
+            <div class="spinner-border spinner-border-sm text-light" role="status" aria-label="Loading">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div id="loadingText" class="mini-note">Analyzing…</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <label for="dreamInput" class="form-label mb-2" style="color: rgba(242,238,252,.9);">
+          Your dream narrative
+        </label>
+        <textarea id="dreamInput" class="form-control" rows="6" placeholder="Describe your dream in detail..."></textarea>
+        <div id="inlineError"></div>
+
+        <div class="d-flex align-items-center gap-3 mt-3 flex-wrap">
+          <button id="analyzeBtn" class="btn btn-accent px-4" type="button" onclick="submitDream()">Analyze</button>
+          <div class="mini-note">
+            Tip: Include key symbols, emotions, and any recurring themes.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="result-card" aria-label="Analysis results">
+      <div class="result-body">
+        <div id="result" class="mt-1">
+          <p class="mb-0" style="color: rgba(242,238,252,.68);">
+            Enter a dream above and press <strong>Analyze</strong> to receive an interpretation.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-4 foot">
+      This tool is for reflective exploration and not a substitute for professional mental health care.
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function setLoading(isLoading) {
+      const wrap = document.getElementById('loadingWrap');
+      const btn = document.getElementById('analyzeBtn');
+      wrap.style.display = isLoading ? 'inline-flex' : 'none';
+      wrap.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+      btn.disabled = !!isLoading;
+    }
+
+    function clearResult() {
+      const result = document.getElementById('result');
+      while (result.firstChild) result.removeChild(result.firstChild);
+    }
+
+    function showInlineError(msg) {
+      const el = document.getElementById('inlineError');
+      if (!msg) {
+        el.style.display = 'none';
+        el.textContent = '';
+        return;
+      }
+      el.style.display = 'block';
+      el.textContent = msg;
+    }
+
+    function showResultError(msg) {
+      clearResult();
+      const result = document.getElementById('result');
+      const p = document.createElement('p');
+      p.style.color = getComputedStyle(document.documentElement).getPropertyValue('--danger').trim() || '#ff6b7a';
+      p.className = 'mb-0';
+      p.textContent = msg;
+      result.appendChild(p);
+    }
+
+    function appendSection(titleText, bodyText) {
+      const result = document.getElementById('result');
+
+      const h3 = document.createElement('h3');
+      h3.textContent = titleText;
+
+      const p = document.createElement('p');
+      p.className = 'mb-0';
+      p.textContent = bodyText == null ? '' : String(bodyText);
+
+      result.appendChild(h3);
+      result.appendChild(p);
+    }
+
+    function appendSuggestions(titleText, suggestions) {
+      const result = document.getElementById('result');
+
+      const h3 = document.createElement('h3');
+      h3.textContent = titleText;
+
+      const ul = document.createElement('ul');
+
+      if (Array.isArray(suggestions) && suggestions.length) {
+        for (const s of suggestions) {
+          const li = document.createElement('li');
+          li.textContent = s == null ? '' : String(s);
+          ul.appendChild(li);
+        }
+      } else {
+        const li = document.createElement('li');
+        li.textContent = 'No suggestions provided.';
+        ul.appendChild(li);
+      }
+
+      result.appendChild(h3);
+      result.appendChild(ul);
+    }
+
+    async function submitDream() {
+      const input = document.getElementById('dreamInput');
+      const dream = (input.value || '').trim();
+
+      showInlineError('');
+      if (!dream) {
+        showInlineError('Please describe your dream before analyzing.');
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const res = await fetch('/analyze_dream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dream })
+        });
+
+        if (!res.ok) {
+          let detail = '';
+          try {
+            const txt = await res.text();
+            detail = txt ? (' ' + txt) : '';
+          } catch (_) {}
+          showResultError('Analysis failed. Please try again.' + detail);
+          return;
+        }
+
+        const data = await res.json();
+
+        clearResult();
+
+        const interpretation = data && typeof data === 'object' ? data.interpretation : '';
+        const psychological_state = data && typeof data === 'object' ? data.psychological_state : '';
+        const suggestions = data && typeof data === 'object' ? data.suggestions : [];
+
+        // Use textContent only; do not inject raw HTML.
+        appendSection('Interpretation', interpretation);
+        appendSection('Psychological State', psychological_state);
+        appendSuggestions('Suggestions', suggestions);
+
+      } catch (err) {
+        showResultError('Network error. Please check your connection and try again.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function loadIllustration() {
+      const img = document.getElementById('illustrationImg');
+      img.style.display = 'none';
+
+      try {
+        const res = await fetch('/generate_illustration', { method: 'GET' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const url = data && typeof data === 'object' ? data.image_url : '';
+        if (!url) return;
+
+        img.onload = function() {
+          img.style.display = 'block';
+        };
+        img.onerror = function() {
+          img.style.display = 'none';
+        };
+        img.src = String(url);
+      } catch (_) {
+        // Keep placeholder gradient; do not block page.
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      loadIllustration();
+
+      // Ctrl/Cmd+Enter to submit
+      const input = document.getElementById('dreamInput');
+      input.addEventListener('keydown', function(e) {
+        const isSubmit = (e.key === 'Enter' && (e.ctrlKey || e.metaKey));
+        if (isSubmit) submitDream();
+      });
+    });
+  </script>
+</body>
+</html>
