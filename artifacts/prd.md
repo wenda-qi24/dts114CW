@@ -1,54 +1,64 @@
 ## Overview
-- A Freudian dream interpretation website that guides users through a multi-step workflow: dream input (manifest content) → 5–7 open-ended follow-up questions → therapeutic analysis.  
-- The system uses Freudian concepts (free association, latent content, wish fulfillment, condensation/displacement) to generate insights and well-being suggestions in a professional, nonjudgmental tone.  
-- User sessions persistently store the dream, generated questions, user answers, and the final interpretation for later review and continuity.  
+- Build a Freudian dream interpretation website that guides users through a multi-step workflow: dream input → 5–7 open-ended follow-up questions → analysis.
+- Use Freudian concepts (manifest vs. latent content, wish fulfillment, free association) to generate therapeutic, professional interpretations and well-being suggestions.
+- Store user sessions containing the dream description, generated questions, user answers, and final analysis for later review, export, or deletion.
+- Provide clear consent, privacy controls, and safety-oriented language that supports reflection without presenting as medical diagnosis.
 
 ## Goals
-- Help Dreamers explore possible latent content and wish fulfillment themes through structured free-association prompts and reflective analysis.  
-- Deliver a safe, therapeutic, professional user experience with clear consent and gentle language around sensitive material.  
-- Provide reliable session storage and retrieval so users and admins can review prior dreams, questions, answers, and interpretations.  
+- Help Dreamers capture manifest dream material and explore latent content through guided free association questions.
+- Generate a coherent Freudian interpretation emphasizing hypotheses about wish fulfillment and unconscious conflict, with practical well-being suggestions.
+- Enable secure session persistence and retrieval so users can track themes across multiple dreams over time.
+- Maintain a consistently therapeutic and professional tone in all user-facing copy and AI outputs.
 
 ## Non-Goals
-- The product does not provide diagnosis, crisis counseling, or replace psychotherapy, and it avoids definitive claims about the user’s unconscious.  
-- The product does not offer real-time clinician chat or guarantee clinical accuracy of interpretations.  
-- The product does not monetize or share user dream content for advertising or third-party profiling.  
+- Provide psychotherapy, clinical diagnosis, crisis counseling, or replace professional mental health care.
+- Guarantee “correct” interpretations or claims of factual accuracy about the user’s unconscious motives.
+- Perform identity verification beyond standard account/session security needs or share session content with third parties by default.
+- Support non-Freudian schools of interpretation as primary frameworks (e.g., Jungian, cognitive, spiritual), except as optional disclaimers.
 
 ## User Personas (brief)
-- Dreamer: Shares dream manifest content, answers 5–7 open-ended questions, and reviews interpretation and well-being suggestions with strong privacy controls.  
-- Freudian AI Analyst: Generates theory-based questions and produces structured interpretations referencing latent content, wish fulfillment, and free association while maintaining clinical-style boundaries.  
-- Administrator: Manages session data, auditing, retention/deletion requests, and policy enforcement to maintain safety, privacy, and compliance.  
+- Dreamer: Wants a safe, private place to describe dreams, answer 5–7 prompts, receive a gentle interpretation, and revisit or delete saved sessions.
+- Freudian AI Analyst: Needs structured context (dream + answers + optional prior sessions) to differentiate manifest/latent content and form non-overreaching wish-fulfillment hypotheses.
+- Administrator: Needs tools for secure storage, access control, retention/deletion workflows, and monitoring for safety, quality, and compliance.
 
 ## Key Features
-- Guided multi-step flow with dream entry, 5–7 open-ended follow-up questions, and a final analysis grounded in Freudian theory (latent vs. manifest content, wish fulfillment, condensation/displacement).  
-- Session management that saves and organizes dream text, question set, answers, and analysis with timestamps for later review.  
-- Therapeutic, professional UX copy with consent prompts, content warnings when appropriate, and gentle reflection suggestions for well-being.  
+- Dream intake form with supportive guidance, consent language, and optional tagging (date, emotions, recurring themes) to anchor later reflection.
+- Automated generation of 5–7 Freudian-theory-based open-ended questions designed to elicit free association and probe latent content.
+- Interpretation page that summarizes manifest content, proposes latent themes and wish-fulfillment hypotheses, and offers well-being suggestions and reflection prompts.
+- Session library with secure storage of dream, questions, answers, and analysis plus controls to view, export, and delete sessions.
 
 ## User Flows
-- Dreamer starts a session, enters the dream (manifest content), and confirms consent and privacy preferences before proceeding.  
-- System generates 5–7 open-ended Freudian follow-up questions, the Dreamer answers them, and can edit responses before analysis.  
-- System produces an interpretation (linking answers to free associations and possible latent themes) plus well-being suggestions, then saves the complete session for later access.  
+- Dream input: User enters dream narrative, confirms consent/privacy, and submits to begin the interpretation workflow.
+- Follow-up questions: System presents 5–7 prompts sequentially, allowing edits and encouraging free association with gentle, non-leading language.
+- Analysis: System synthesizes dream + answers into a Freudian interpretation (manifest vs. latent content, wish fulfillment) and provides well-being suggestions.
+- Review later: User opens the session library to revisit prior sessions, compare themes, and export or delete data.
 
 ## Functional Requirements
-- The system must generate 5–7 open-ended questions per dream that encourage free association and clarify affect, symbols, relationships, and conflicts.  
-- The system must produce a structured interpretation referencing manifest content, hypothesized latent content, and wish fulfillment, with supportive well-being suggestions in a professional tone.  
-- The system must store and retrieve sessions containing dream input, generated questions, user answers, and the final analysis, with user access controls and admin tools for auditing/export/deletion.  
+- The system must generate 5–7 open-ended, Freudian-aligned questions that adapt to dream content and prior answers without making diagnostic claims.
+- The system must produce an analysis that explicitly separates manifest content from hypothesized latent content and frames wish-fulfillment interpretations as tentative.
+- The system must store per-session objects (dream text, questions, answers, analysis, timestamps) and support retrieval, update (edits), export, and deletion.
+- The system must present therapeutic, professional UI copy and safety prompts, including clear disclaimers and escalation guidance for distressing content.
 
 ## Non-Functional Requirements
-- Privacy and security: encrypt data in transit and at rest, enforce least-privilege access, and log access to stored sessions for auditing.  
-- Safety and quality: apply content policies to avoid harmful or sexualized speculation, include disclaimers, and provide escalation guidance for self-harm indicators without claiming clinical authority.  
-- Performance and reliability: load core pages quickly, generate questions and analysis within acceptable latency, and ensure high availability with backups for stored sessions.  
+- Security and privacy: Encrypt data in transit and at rest, enforce access control, and minimize exposure of sensitive session content in logs.
+- Reliability: Ensure session saves are durable and recoverable, with graceful handling of timeouts during multi-step Q&A.
+- Performance: Provide responsive interactions where question generation and analysis complete within acceptable UX thresholds for web apps.
+- Quality and safety: Maintain consistent tone, reduce harmful or shaming content, and provide monitoring/feedback loops for improving outputs.
 
 ## Constraints/Assumptions
-- Interpretations are reflective and probabilistic, explicitly framed as exploratory rather than factual, and consistently use therapeutic/professional language.  
-- Users may provide highly sensitive content; the system assumes strict consent, clear deletion options, and configurable retention policies are required.  
-- The AI must operate within policy constraints that limit explicit content, reduce risk of coercive conclusions, and avoid diagnosing mental health conditions.  
+- Interpretations are psychoanalytic hypotheses and must be framed as reflective content, not medical advice or factual determinations.
+- Users may provide highly sensitive personal material, so the product assumes strict data minimization, explicit consent, and user-controlled deletion.
+- The workflow assumes a minimum viable experience without requiring user accounts, but persistent session storage may require authentication for cross-device access.
+- Model outputs may vary, so the product assumes ongoing prompt/guardrail tuning and admin review processes for safety and consistency.
 
 ## Success Metrics
-- Completion rate of the multi-step workflow (dream input → questions → analysis) and percentage of sessions saved successfully without errors.  
-- User-reported helpfulness and perceived safety of questions and interpretations (e.g., post-session ratings and qualitative feedback).  
-- Retention and return usage for session review (e.g., users revisiting saved sessions) alongside low incidence of safety-policy violations.  
+- Completion rate for the multi-step workflow (dream input → questions answered → analysis viewed) and drop-off points per step.
+- User-reported helpfulness and tone ratings for questions and analysis, including perceived safety and non-judgment.
+- Session retention behaviors: percentage of users returning to review saved sessions and frequency of theme-tracking across multiple dreams.
+- Safety and compliance indicators: rate of flagged outputs, time-to-resolution for incidents, and successful fulfillment of export/delete requests.
 
 ## Open Questions
-- What retention defaults and deletion flows (immediate vs. scheduled purge) best balance user control, safety auditing, and compliance requirements?  
-- Should the analysis be presented as a single narrative or segmented sections (manifest summary, free associations, latent hypotheses, wish fulfillment, well-being suggestions) for clarity and safety?  
-- What administrator capabilities are necessary beyond retrieval (e.g., redaction tools, consent logs, export formats) while minimizing exposure to sensitive content?
+- Should sessions be available without accounts (device-based) and how will cross-device access work while maintaining privacy guarantees?
+- What level of prior-session context should the AI use by default to identify recurring themes without overfitting or exposing sensitive history?
+- What specific guardrails and refusal patterns are needed for content involving trauma, self-harm, or abuse while preserving a therapeutic tone?
+- What data retention defaults (e.g., auto-delete after X days) best balance user value with privacy and compliance requirements?

@@ -1,16 +1,25 @@
 @startuml
-actor Dreamer
-participant "System" as System
-database Storage
+actor "Dreamer" as Dreamer
+participant "Frontend App" as FE
+participant "Backend API" as BE
+participant "LLM Analysis Service" as LLM
+database "Session Database" as DB
 
-Dreamer -> System: Submit dream with consent and privacy settings
-System -> Storage: Create session and save dream
-System --> Dreamer: Display 5-7 follow-up questions
-Dreamer -> System: Submit and edit answers
-System -> Storage: Save answers to session
-System -> Storage: Generate and save Freudian analysis report
-System --> Dreamer: Display full analysis report
-Dreamer -> System: Request past sessions list
-System -> Storage: Retrieve sessions metadata
-System --> Dreamer: Display sessions list and filters
+Dreamer -> FE: Enter dream text/date/emotions/tags
+Dreamer -> FE: Confirm privacy/consent
+Dreamer -> FE: Submit dream
+FE -> BE: Send dream submission data
+BE -> DB: Save new session with manifest narrative
+DB --> BE: Return session ID
+BE --> FE: Return session created confirmation
+
+FE -> BE: Request 5-7 follow-up questions for session
+BE -> DB: Load session manifest content
+DB --> BE: Return session data
+BE -> LLM: Generate 5-7 open-ended follow-up questions
+LLM --> BE: Return tailored questions
+BE -> DB: Save questions to session
+BE --> FE: Return questions for display
+FE --> Dreamer: Show follow-up questions
+
 @enduml

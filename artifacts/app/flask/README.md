@@ -1,6 +1,11 @@
 # Freudian Dream Interpreter (Flask)
 
-A small web app that accepts a dream description and returns a **Freudian-style analysis**—including **interpretation**, **current psychological state**, and **practical suggestions**. It uses an LLM via **apifree**. The app can also create a **dreamy illustration** from your dream via `/generate_illustration`.
+A small Flask web app that accepts a dream narrative and returns a Freudian-style analysis using an LLM via **apifree**. The analysis includes:
+- **Interpretation** (symbols, latent content)
+- **Psychological state** (possible conflicts/affects)
+- **Suggestions** (reflection prompts, next steps)
+
+It also generates a dreamy illustration from the dream via `POST /generate_illustration`.
 
 ## Setup
 
@@ -20,20 +25,14 @@ pip install flask flask-cors requests
 python main.py
 ```
 
-Visit: `http://127.0.0.1:5005`
+Server: `http://127.0.0.1:5005`
 
 ## API
 
-### Analyze Dream
-
-`POST /analyze_dream` (JSON)
+### Analyze a dream
 
 ```bash
 curl -X POST http://127.0.0.1:5005/analyze_dream \
   -H "Content-Type: application/json" \
-  -d '{"dream_text":"I keep losing my teeth while trying to speak in public."}'
+  -d '{"dream_text":"I was walking through a collapsing library while looking for a locked door."}'
 ```
-
-### Generate Illustration
-
-`POST /generate_illustration` (JSON): send the same `dream_text` to get a dreamy image prompt/output.
